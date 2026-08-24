@@ -44,7 +44,7 @@ class Game:
                 if event.type == pygame.QUIT:  # clicking x on the window
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         self.cloudMovementY[0] = 1
                     if event.key == pygame.K_DOWN:
@@ -53,7 +53,7 @@ class Game:
                         self.cloudMovementX[0] = 1
                     if event.key == pygame.K_RIGHT:
                         self.cloudMovementX[1] = 1
-                elif event.type == pygame.KEYUP:
+                if event.type == pygame.KEYUP:
                     if event.key == pygame.K_UP:
                         self.cloudMovementY[0] = 0
                     if event.key == pygame.K_DOWN:
@@ -62,8 +62,6 @@ class Game:
                         self.cloudMovementX[0] = 0
                     if event.key == pygame.K_RIGHT:
                         self.cloudMovementX[1] = 0
-
-
 
             pygame.display.update()  # update the display to changes made to the screen
             self.clock.tick(60)  # force run at 60 fps
