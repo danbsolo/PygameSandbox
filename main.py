@@ -1,87 +1,20 @@
 import pygame as pg
 import sys
-from scripts.entities import PlayerEntity
-from scripts.header import *
-from scripts.utils import *
-from scripts.tileMap import TileMap
-import asyncio
-
-class Game:
-    def __init__(self):        
-        pg.init()
-        pg.display.set_caption("UUUUU")
-        
-        self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # create the window
-        self.container = pg.Surface((SCREEN_WIDTH/CONTAINER_DIVIDER, SCREEN_HEIGHT/CONTAINER_DIVIDER))
-
-        self.clock = pg.time.Clock()
-        
-        self.assets = {
-            #"decor": loadImages("tiles/decor", TILE_SIZE, TILE_SIZE),
-            "grass": loadImages("tiles/grass", TILE_SIZE, TILE_SIZE),
-            #"large_decor": loadImages("tiles/large_decor", TILE_SIZE, TILE_SIZE),
-            "stone": loadImages("tiles/stone", TILE_SIZE, TILE_SIZE),
-            "spikes": loadImages("tiles/spikes", TILE_SIZE, TILE_SIZE),
-            "victory": loadImages("tiles/victory", TILE_SIZE, TILE_SIZE)
-        }
-
-        self.victoryAchieved = False
-        self.startTime = time.time()
-        self.finishTime = None
-
-        self.horizontalMovement = {}
-        self.verticalMovement = {}
-
-        self.playerId = 0
-        self.playerEntity = PlayerEntity(self, self.playerId, "player", (60/CONTAINER_DIVIDER, 480/CONTAINER_DIVIDER), (8, 15), imgPath='entities/player.png', convert=False, colorKey=False)
-
-        self.tileMap = TileMap(self, 4)
 
 
-    async def run(self):
-        while True:
-            self.container.fill((14, 140, 160))  # resets screen
+pg.init()
+pg.display.set_caption("My Game!")
+screen = pg.display.set_mode((640, 480))  # creates window
 
-            self.tileMap.render(self.container)
-
-            self.playerEntity.update(self.tileMap)
-            self.playerEntity.render(self.container)
-
-            speed = 4
-
-            if self.victoryAchieved:
-                text_surface = pg.font.SysFont('arialrounded', 50, bold=True).render(f'{self.finishTime}s\nCongrats!', True, (0, 0, 0))
-                self.container.blit(text_surface, (310 / CONTAINER_DIVIDER, 565 / CONTAINER_DIVIDER))
-
-            for event in pg.event.get():  # get user input
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
-                elif event.type == pg.KEYDOWN:  # key pressed
-                    if event.key == pg.K_LEFT:
-                        self.horizontalMovement[self.playerId][0] = speed
-                    elif event.key == pg.K_RIGHT:
-                        self.horizontalMovement[self.playerId][1] = speed
-                    elif event.key == pg.K_UP or event.key == pg.K_SPACE:
-                        if self.playerEntity.isGrounded:
-                            self.playerEntity.flipGravity()
-                    elif event.key == pg.K_SPACE:
-                        self.playerEntity.resetPosition()
-                elif event.type == pg.KEYUP:  # key released
-                    if event.key == pg.K_LEFT:
-                        self.horizontalMovement[self.playerId][0] = 0
-                    elif event.key == pg.K_RIGHT:
-                        self.horizontalMovement[self.playerId][1] = 0
-                elif event.type == pg.MOUSEBUTTONDOWN:
-                    x, y = event.pos
-                    print(f"Mouse clicked: ({x}, {y}) -> ({x // CONTAINER_DIVIDER // TILE_SIZE}, {y // CONTAINER_DIVIDER // TILE_SIZE})")
-
-            self.screen.blit(pg.transform.scale(self.container, (SCREEN_WIDTH, SCREEN_HEIGHT)))
-            pg.display.update()  # update the display with any changes
-            self.clock.tick(60)  # force loop to run at 60 fps
-            await asyncio.sleep(0)
+clock = pg.time.Clock()
 
 
+while True:
+    for event in pg.event.get():
+       if event.type == pg.QUIT:  # clicking x on the window
+           pg.quit()
+           sys.exit()
 
-game = Game()
-asyncio.run(game.run())
+
+    pg.display.update()  # update the display to changes made to the screen
+    clock.tick(60)  # force run at 60 fps
