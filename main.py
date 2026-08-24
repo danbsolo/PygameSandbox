@@ -3,7 +3,7 @@ import sys
 import os
 
 IDLE_STATE = [0, 0]
-MAGNITUDE_NORMALIZER = 2 ** 0.5
+MAGNITUDE_NORMALIZER = 1 / (2 ** 0.5)
 
 class Game:
     def __init__(self):
@@ -30,8 +30,8 @@ class Game:
             else:
                 diagonalSpeedMultipler = 1
 
-            cloudSpeedX = (self.cloudMovementX[1] - self.cloudMovementX[0]) * self.cloudSpeedMultiplier / diagonalSpeedMultipler
-            cloudSpeedY = (self.cloudMovementY[1] - self.cloudMovementY[0]) * self.cloudSpeedMultiplier / diagonalSpeedMultipler
+            cloudSpeedX = (self.cloudMovementX[1] - self.cloudMovementX[0]) * self.cloudSpeedMultiplier * diagonalSpeedMultipler
+            cloudSpeedY = (self.cloudMovementY[1] - self.cloudMovementY[0]) * self.cloudSpeedMultiplier * diagonalSpeedMultipler
             self.cloudImgPos[0] += cloudSpeedX
             self.cloudImgPos[1] += cloudSpeedY
             
