@@ -48,7 +48,7 @@ class Game:
             textSurface = self.fontMain.render(f"Collision detected!" if (colliding) else "All quiet on the western front.", True, (0, 0, 0))
 
             # rendering
-            self.screen.fill((14, 219, 248))
+            self.screen.fill((14, 140, 160))  # (14, 219, 248)
             
             if colliding:
                 pygame.draw.rect(self.screen, (0, 100, 255), self.collisionArea)
