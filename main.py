@@ -3,10 +3,7 @@ import sys
 import os
 from scripts.entities import PhysicsEntity
 from scripts.utils import loadImage
-
-
-IDLE_STATE = [0, 0]
-MAGNITUDE_NORMALIZER = 1 / (2 ** 0.5)
+from scripts.defs import *
 
 
 class Game:
@@ -14,8 +11,8 @@ class Game:
         pygame.init()
         pygame.display.set_caption("My Game!")
 
-        self.screen = pygame.display.set_mode((640, 480))  # creates window
-        self.display = pygame.Surface((320, 240))
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # creates window
+        self.display = pygame.Surface((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
         self.clock = pygame.time.Clock()
 
@@ -23,9 +20,12 @@ class Game:
         self.movementY = [0, 0]
 
         self.player = PhysicsEntity(self, "player", (50, 50), (8, 15))
-        self.playerSpeedMultiplier = 6
+        self.playerSpeedMultiplier = 5
         self.assets = {
-            "player": loadImage(os.path.join("entities", "player.png"))
+            "player": loadImage(os.path.join("entities", "player.png")),
+            #"randomVerticalImage": loadImage(os.path.join("other", "randomVerticalImage.jpg")),
+            "darkVerticalImage": pygame.transform.scale(loadImage(os.path.join("other", "darkVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)),
+            "lightVerticalImage": pygame.transform.flip(pygame.transform.scale(loadImage(os.path.join("other", "lightVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)), True, False)
         }
 
     def run(self):
@@ -39,6 +39,12 @@ class Game:
 
             self.display.fill((14, 140, 160))
             self.player.render(self.display)
+
+            #pygame.draw.rect(self.screen, (24, 24, 24), (0, 0, 160, 960))
+            #pygame.draw.rect(self.screen, (24, 24, 24), (1120, 0, 160, 960))
+            #self.screen.blit(self.assets["randomVerticalImage"], (0, 0))
+            self.screen.blit(self.assets["darkVerticalImage"], (0, 0))
+            self.screen.blit(self.assets["lightVerticalImage"], (SCREEN_WIDTH - BORDER_WIDTH, 0))
 
             # event loop
             for event in pygame.event.get():
@@ -64,7 +70,9 @@ class Game:
                     if event.key == pygame.K_RIGHT:
                         self.movementX[1] = 0
 
-            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()) , (0, 0))
+            #self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            self.screen.blit(pygame.transform.scale(self.display, (DISPLAY_SCALED_WIDTH, DISPLAY_SCALED_HEIGHT)), (BORDER_WIDTH, 0))
+
             pygame.display.update()
             self.clock.tick(60)
 
