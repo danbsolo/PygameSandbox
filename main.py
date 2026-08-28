@@ -3,8 +3,9 @@ import sys
 import os
 from scripts.entities import PhysicsEntity
 from scripts.utils import loadImage, loadImages
-from scripts.maps import Map
+from scripts.maps import Tilemap
 from scripts.defs import *
+from collections import deque
 
 
 class Game:
@@ -21,7 +22,7 @@ class Game:
         self.movementY = [0, 0]
 
         self.player = PhysicsEntity(self, "player", (50, 50), (8, 15))
-        self.playerSpeedMultiplier = 5
+        self.playerSpeedMultiplier = 6
         self.assets = {
             "player": loadImage(os.path.join("entities", "player.png")),
             #"randomVerticalImage": loadImage(os.path.join("other", "randomVerticalImage.jpg")),
@@ -33,15 +34,19 @@ class Game:
             "stone": loadImages(os.path.join("tiles", "stone"))
         }
 
-        self.tilemap = Map(self, 16)
+        self.tilemap = Tilemap(self, 16)
+
+        self.bufferInputStack = deque(maxlen=10)
 
 
     def run(self):
+        counter = 0
         while True:
+            counter += 1
             diagonalSpeedMultipler = 1 if (self.movementX != IDLE_STATE and self.movementY != IDLE_STATE) else 1
             speedX = (self.movementX[1] - self.movementX[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
             speedY = (self.movementY[1] - self.movementY[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
-            self.player.update((speedX, speedY))
+            self.player.update(self.tilemap, (speedX, speedY))
 
             self.display.fill((14, 140, 160))
             self.tilemap.render(self.display)
@@ -55,28 +60,42 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                    
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        self.movementY[0] = 1
-                    if event.key == pygame.K_DOWN:
-                        self.movementY[1] = 1
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
+
+                    # movement (not included in buffer)
                     if event.key == pygame.K_LEFT:
                         self.movementX[0] = 1
                     if event.key == pygame.K_RIGHT:
                         self.movementX[1] = 1
+
+                    # other buttons (included in buffer)
+                    if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                        self.bufferInputStack.append(event.key)
+                    else:
+                        self.bufferInputStack.append(None)
+                else:
+                    self.bufferInputStack.append(None)
+                    
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_UP:
-                        self.movementY[0] = 0
-                    if event.key == pygame.K_DOWN:
-                        self.movementY[1] = 0
                     if event.key == pygame.K_LEFT:
                         self.movementX[0] = 0
                     if event.key == pygame.K_RIGHT:
                         self.movementX[1] = 0
+            else:
+                self.bufferInputStack.append(None)
 
-            #self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            if pygame.K_UP in self.bufferInputStack and self.player.isGrounded:
+                self.player.velocity[1] = -3
+                self.bufferInputStack.clear()
+            elif pygame.K_DOWN in self.bufferInputStack and not self.player.isGrounded:
+                self.player.velocity[1] = 5
+                self.bufferInputStack.clear()
+
             self.screen.blit(pygame.transform.scale(self.display, (DISPLAY_SCALED_WIDTH, DISPLAY_SCALED_HEIGHT)), (BORDER_WIDTH, 0))
-
             pygame.display.update()
             self.clock.tick(60)
 
