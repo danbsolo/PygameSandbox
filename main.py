@@ -37,6 +37,7 @@ class Game:
         self.tilemap = Tilemap(self, 16)
 
         self.bufferInputStack = deque(maxlen=10)
+        self.coyoteTimeStack = deque(maxlen=10)
 
 
     def run(self):
@@ -88,9 +89,12 @@ class Game:
             else:
                 self.bufferInputStack.append(None)
 
-            if pygame.K_UP in self.bufferInputStack and self.player.isGrounded:
+            self.coyoteTimeStack.append(self.player.isGrounded)
+
+            if pygame.K_UP in self.bufferInputStack and True in self.coyoteTimeStack:
                 self.player.velocity[1] = -3
                 self.bufferInputStack.clear()
+                self.coyoteTimeStack.clear()
             elif pygame.K_DOWN in self.bufferInputStack and not self.player.isGrounded:
                 self.player.velocity[1] = 5
                 self.bufferInputStack.clear()
