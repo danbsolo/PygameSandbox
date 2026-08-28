@@ -2,7 +2,8 @@ import pygame
 import sys
 import os
 from scripts.entities import PhysicsEntity
-from scripts.utils import loadImage
+from scripts.utils import loadImage, loadImages
+from scripts.maps import Map
 from scripts.defs import *
 
 
@@ -25,24 +26,27 @@ class Game:
             "player": loadImage(os.path.join("entities", "player.png")),
             #"randomVerticalImage": loadImage(os.path.join("other", "randomVerticalImage.jpg")),
             "darkVerticalImage": pygame.transform.scale(loadImage(os.path.join("other", "darkVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)),
-            "lightVerticalImage": pygame.transform.flip(pygame.transform.scale(loadImage(os.path.join("other", "lightVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)), True, False)
+            "lightVerticalImage": pygame.transform.flip(pygame.transform.scale(loadImage(os.path.join("other", "lightVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)), True, False),
+            "decor": loadImages(os.path.join("tiles", "decor")),
+            "grass": loadImages(os.path.join("tiles", "grass")),
+            "large_decor": loadImages(os.path.join("tiles", "large_decor")),
+            "stone": loadImages(os.path.join("tiles", "stone"))
         }
+
+        self.tilemap = Map(self, 16)
+
 
     def run(self):
         while True:
             diagonalSpeedMultipler = 1 if (self.movementX != IDLE_STATE and self.movementY != IDLE_STATE) else 1
-
             speedX = (self.movementX[1] - self.movementX[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
             speedY = (self.movementY[1] - self.movementY[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
-            
             self.player.update((speedX, speedY))
 
             self.display.fill((14, 140, 160))
+            self.tilemap.render(self.display)
             self.player.render(self.display)
 
-            #pygame.draw.rect(self.screen, (24, 24, 24), (0, 0, 160, 960))
-            #pygame.draw.rect(self.screen, (24, 24, 24), (1120, 0, 160, 960))
-            #self.screen.blit(self.assets["randomVerticalImage"], (0, 0))
             self.screen.blit(self.assets["darkVerticalImage"], (0, 0))
             self.screen.blit(self.assets["lightVerticalImage"], (SCREEN_WIDTH - BORDER_WIDTH, 0))
 
