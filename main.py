@@ -36,14 +36,14 @@ class Game:
 
         self.tilemap = Tilemap(self, 16)
 
-        self.bufferInputStack = deque(maxlen=10)
-        self.coyoteTimeStack = deque(maxlen=10)
+        self.bufferInputQueue = deque(maxlen=10)
+        self.coyoteTimeQueue = deque(maxlen=10)
 
 
     def run(self):
-        counter = 0
+        floatHeld = False
+
         while True:
-            counter += 1
             diagonalSpeedMultipler = 1 if (self.movementX != IDLE_STATE and self.movementY != IDLE_STATE) else 1
             speedX = (self.movementX[1] - self.movementX[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
             speedY = (self.movementY[1] - self.movementY[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
@@ -75,29 +75,36 @@ class Game:
 
                     # other buttons (included in buffer)
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                        self.bufferInputStack.append(event.key)
+                        self.bufferInputQueue.append(event.key)
+                    elif event.key == pygame.K_x:
+                        floatHeld = True
                     else:
-                        self.bufferInputStack.append(None)
+                        self.bufferInputQueue.append(None)
                 else:
-                    self.bufferInputStack.append(None)
+                    self.bufferInputQueue.append(None)
                     
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
                         self.movementX[0] = 0
-                    if event.key == pygame.K_RIGHT:
+                    elif event.key == pygame.K_RIGHT:
                         self.movementX[1] = 0
+                    elif event.key == pygame.K_x:
+                        floatHeld = False 
             else:
-                self.bufferInputStack.append(None)
+                self.bufferInputQueue.append(None)
 
-            self.coyoteTimeStack.append(self.player.isGrounded)
+            self.coyoteTimeQueue.append(self.player.isGrounded)
 
-            if pygame.K_UP in self.bufferInputStack and True in self.coyoteTimeStack:
-                self.player.velocity[1] = -3
-                self.bufferInputStack.clear()
-                self.coyoteTimeStack.clear()
-            elif pygame.K_DOWN in self.bufferInputStack and not self.player.isGrounded:
+            if pygame.K_UP in self.bufferInputQueue and True in self.coyoteTimeQueue:
+                self.player.velocity[1] = -4
+                self.bufferInputQueue.clear()
+                self.coyoteTimeQueue.clear()
+            elif pygame.K_DOWN in self.bufferInputQueue and not self.player.isGrounded:
                 self.player.velocity[1] = 5
-                self.bufferInputStack.clear()
+                self.bufferInputQueue.clear()
+
+            if floatHeld and not self.player.isGrounded:
+                self.player.velocity[1] = 0.1
 
             self.screen.blit(pygame.transform.scale(self.display, (DISPLAY_SCALED_WIDTH, DISPLAY_SCALED_HEIGHT)), (BORDER_WIDTH, 0))
             pygame.display.update()
