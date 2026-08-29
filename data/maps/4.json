@@ -28,11 +28,6 @@
         "21;7" : {"tileType": "spikes", "variant": 1, "pos": [21, 7]},
         "22;7" : {"tileType": "spikes", "variant": 1, "pos": [22, 7]},
 
-        "27;7" : {"tileType": "spikes", "variant": 1, "pos": [27, 7]},
-        "28;7" : {"tileType": "spikes", "variant": 1, "pos": [28, 7]},
-        "29;7" : {"tileType": "spikes", "variant": 1, "pos": [29, 7]},
-        "30;7" : {"tileType": "spikes", "variant": 1, "pos": [30, 7]},
-
         "3;10" : {"tileType": "grass", "variant": 1, "pos": [3, 10]},
         "4;10" : {"tileType": "grass", "variant": 1, "pos": [4, 10]},
         "5;10" : {"tileType": "grass", "variant": 1, "pos": [5, 10]},
@@ -52,9 +47,14 @@
         "7;3" : {"tileType": "stone", "variant": 1, "pos": [7, 3]},
 
         "8;3" : {"tileType": "stone", "variant": 1, "pos": [8, 3]},
-
-        "24;18" : {"tileType": "victory", "variant": 0, "pos": [24, 18]},
-        "25;18" : {"tileType": "victory", "variant": 0, "pos": [25, 18]}
         
+        "23;18" : {"tileType": "victory", "variant": 0, "pos": [23, 18]},
+        "24;18" : {"tileType": "victory", "variant": 0, "pos": [24, 18]},
+        "25;18" : {"tileType": "victory", "variant": 0, "pos": [25, 18]},
+        
+        "26;15" : {"tileType": "stone", "variant": 7, "pos": [26, 15]},
+        "26;16" : {"tileType": "stone", "variant": 7, "pos": [26, 16]},
+        "26;17" : {"tileType": "stone", "variant": 7, "pos": [26, 17]},
+        "26;18" : {"tileType": "stone", "variant": 7, "pos": [26, 18]}       
     }
 }

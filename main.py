@@ -5,6 +5,8 @@ from scripts.header import *
 from scripts.utils import *
 from scripts.tileMap import TileMap
 import asyncio
+from collections import deque
+
 
 class Game:
     def __init__(self):        
@@ -37,6 +39,11 @@ class Game:
 
         self.tileMap = TileMap(self, 4)
 
+        self.bufferInputQueue = deque(maxlen=10)
+        self.coyoteTimeQueue = deque(maxlen=4)
+
+        self.myFont = pg.font.SysFont(pg.font.get_default_font(), 50, bold=True)
+
 
     async def run(self):
         while True:
@@ -50,31 +57,41 @@ class Game:
             speed = 4
 
             if self.victoryAchieved:
-                text_surface = pg.font.SysFont('arialrounded', 50, bold=True).render(f'{self.finishTime}s\nCongrats!', True, (0, 0, 0))
-                self.container.blit(text_surface, (310 / CONTAINER_DIVIDER, 565 / CONTAINER_DIVIDER))
+                victoryText = self.myFont.render(f'{self.finishTime}s\nCongrats!', True, (0, 0, 0))
+                self.container.blit(victoryText, (310 / CONTAINER_DIVIDER, 565 / CONTAINER_DIVIDER))
 
-            for event in pg.event.get():  # get user input
+            events = pg.event.get()
+            if not events:
+                self.bufferInputQueue.append(None)
+
+            for event in events:  # get user input
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
-                elif event.type == pg.KEYDOWN:  # key pressed
+
+                if event.type == pg.KEYDOWN:  # key pressed
                     if event.key == pg.K_LEFT:
                         self.horizontalMovement[self.playerId][0] = speed
                     elif event.key == pg.K_RIGHT:
                         self.horizontalMovement[self.playerId][1] = speed
-                    elif event.key == pg.K_UP or event.key == pg.K_SPACE:
-                        if self.playerEntity.isGrounded:
-                            self.playerEntity.flipGravity()
-                    elif event.key == pg.K_SPACE:
-                        self.playerEntity.resetPosition()
-                elif event.type == pg.KEYUP:  # key released
+
+                    if event.key == pg.K_UP:
+                        self.bufferInputQueue.append(pg.K_UP)
+                    else:
+                        self.bufferInputQueue.append(None)
+
+                if event.type == pg.KEYUP:  # key released
                     if event.key == pg.K_LEFT:
                         self.horizontalMovement[self.playerId][0] = 0
                     elif event.key == pg.K_RIGHT:
                         self.horizontalMovement[self.playerId][1] = 0
-                elif event.type == pg.MOUSEBUTTONDOWN:
-                    x, y = event.pos
-                    print(f"Mouse clicked: ({x}, {y}) -> ({x // CONTAINER_DIVIDER // TILE_SIZE}, {y // CONTAINER_DIVIDER // TILE_SIZE})")
+
+            self.coyoteTimeQueue.append(self.playerEntity.isGrounded)
+
+            if pg.K_UP in self.bufferInputQueue and True in self.coyoteTimeQueue:
+                self.playerEntity.flipGravity()
+                self.bufferInputQueue.clear()
+                self.coyoteTimeQueue.clear()
 
             self.screen.blit(pg.transform.scale(self.container, (SCREEN_WIDTH, SCREEN_HEIGHT)))
             pg.display.update()  # update the display with any changes

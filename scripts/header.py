@@ -2,7 +2,7 @@ import pygame as pg
 from random import randint, uniform, choice
 import time
 
-SCREEN_WIDTH = 1500 #1366 #640 # 1920
+SCREEN_WIDTH = 1080 #1366 #640 # 1920
 SCREEN_HEIGHT = 1080 #768 #480
 
 CONTAINER_DIVIDER = 2
