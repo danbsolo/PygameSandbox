@@ -39,7 +39,7 @@ class Game:
 
         self.tileMap = TileMap(self, 4)
 
-        self.bufferInputQueue = deque(maxlen=10)
+        self.bufferQueue = deque(maxlen=10)
         self.coyoteTimeQueue = deque(maxlen=4)
 
         self.myFont = pg.font.SysFont(pg.font.get_default_font(), 50, bold=True)
@@ -60,11 +60,9 @@ class Game:
                 victoryText = self.myFont.render(f'{self.finishTime}s\nCongrats!', True, (0, 0, 0))
                 self.container.blit(victoryText, (310 / CONTAINER_DIVIDER, 565 / CONTAINER_DIVIDER))
 
-            events = pg.event.get()
-            if not events:
-                self.bufferInputQueue.append(None)
+            bufferedInput = None
 
-            for event in events:  # get user input
+            for event in pg.event.get():  # get user input
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
@@ -76,9 +74,9 @@ class Game:
                         self.horizontalMovement[self.playerId][1] = speed
 
                     if event.key == pg.K_UP:
-                        self.bufferInputQueue.append(pg.K_UP)
+                        bufferedInput = pg.K_UP
                     else:
-                        self.bufferInputQueue.append(None)
+                        bufferedInput = None
 
                 if event.type == pg.KEYUP:  # key released
                     if event.key == pg.K_LEFT:
@@ -86,11 +84,12 @@ class Game:
                     elif event.key == pg.K_RIGHT:
                         self.horizontalMovement[self.playerId][1] = 0
 
+            self.bufferQueue.append(bufferedInput)
             self.coyoteTimeQueue.append(self.playerEntity.isGrounded)
 
-            if pg.K_UP in self.bufferInputQueue and True in self.coyoteTimeQueue:
+            if pg.K_UP in self.bufferQueue and True in self.coyoteTimeQueue:
                 self.playerEntity.flipGravity()
-                self.bufferInputQueue.clear()
+                self.bufferQueue.clear()
                 self.coyoteTimeQueue.clear()
 
             self.screen.blit(pg.transform.scale(self.container, (SCREEN_WIDTH, SCREEN_HEIGHT)))
