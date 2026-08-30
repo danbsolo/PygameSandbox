@@ -15,8 +15,6 @@ class Game:
         
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # create the window
         self.container = pg.Surface((SCREEN_WIDTH/CONTAINER_DIVIDER, SCREEN_HEIGHT/CONTAINER_DIVIDER))
-
-        self.clock = pg.time.Clock()
         
         self.assets = {
             #"decor": loadImages("tiles/decor", TILE_SIZE, TILE_SIZE),
@@ -28,9 +26,10 @@ class Game:
         }
 
         self.victoryAchieved = False
-        self.startTime = time.time()
+        self.frameCounter = 0
         self.finishTime = None
-
+        self.bestTime = None
+        
         self.horizontalMovement = {}
         self.verticalMovement = {}
 
@@ -47,18 +46,24 @@ class Game:
 
     async def run(self):
         while True:
+            self.frameCounter += 1
+
             self.container.fill((14, 140, 160))  # resets screen
 
             self.tileMap.render(self.container)
+
+            if self.victoryAchieved:
+                victoryText = self.myFont.render(f'{self.finishTime}s\nCongrats!', True, (0, 0, 0))
+                self.container.blit(victoryText, (310 / CONTAINER_DIVIDER, 565 / CONTAINER_DIVIDER))
+
+            if self.bestTime:
+                bestTimeText = self.myFont.render(f'PB: {self.bestTime}s', True, (0, 0, 0))
+                self.container.blit(bestTimeText, (50 / CONTAINER_DIVIDER, 865 / CONTAINER_DIVIDER))
 
             self.playerEntity.update(self.tileMap)
             self.playerEntity.render(self.container)
 
             speed = 4
-
-            if self.victoryAchieved:
-                victoryText = self.myFont.render(f'{self.finishTime}s\nCongrats!', True, (0, 0, 0))
-                self.container.blit(victoryText, (310 / CONTAINER_DIVIDER, 565 / CONTAINER_DIVIDER))
 
             bufferedInput = None
 
