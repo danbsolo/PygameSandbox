@@ -15,6 +15,7 @@ class Game:
         
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # create the window
         self.container = pg.Surface((SCREEN_WIDTH/CONTAINER_DIVIDER, SCREEN_HEIGHT/CONTAINER_DIVIDER))
+        self.clock = pg.time.Clock()
         
         self.assets = {
             #"decor": loadImages("tiles/decor", TILE_SIZE, TILE_SIZE),
@@ -99,6 +100,7 @@ class Game:
 
             self.screen.blit(pg.transform.scale(self.container, (SCREEN_WIDTH, SCREEN_HEIGHT)))
             pg.display.update()  # update the display with any changes
+            self.clock.tick(60)
             await asyncio.sleep(0)
 
 
