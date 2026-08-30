@@ -99,7 +99,6 @@ class Game:
 
             self.screen.blit(pg.transform.scale(self.container, (SCREEN_WIDTH, SCREEN_HEIGHT)))
             pg.display.update()  # update the display with any changes
-            self.clock.tick(60)  # force loop to run at 60 fps
             await asyncio.sleep(0)
 
 
