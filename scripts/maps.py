@@ -35,12 +35,12 @@ class Tilemap:
                 collisionBoxes.append(pygame.Rect(tile['position'][0]*self.tileSize,tile['position'][1]*self.tileSize, self.tileSize, self.tileSize))
         return collisionBoxes
 
-    def render(self, surface):
+    def render(self, surface, offset=(0, 0)):
         for tile in self.offgridTiles:
             tile = self.tilemap[location]
-            surface.blit(self.game.assets[tile['type']][tile['variant']], (tile['position'][0], tile['position'][1]))
+            surface.blit(self.game.assets[tile['type']][tile['variant']], (tile['position'][0] - offset[0], tile['position'][1] - offset[1]))
 
         for location in self.tilemap:
             tile = self.tilemap[location]
-            surface.blit(self.game.assets[tile['type']][tile['variant']], (tile['position'][0] * self.tileSize, tile['position'][1] * self.tileSize))
+            surface.blit(self.game.assets[tile['type']][tile['variant']], (tile['position'][0] * self.tileSize - offset[0], tile['position'][1] * self.tileSize - offset[1]))
             # ^ * self.tileSize in order to convert tile position into pixel position

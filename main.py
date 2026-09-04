@@ -39,19 +39,23 @@ class Game:
         self.bufferInputQueue = deque(maxlen=10)
         self.coyoteTimeQueue = deque(maxlen=10)
 
+        self.scroll = [0, 0]
+
 
     def run(self):
         floatHeld = False
 
         while True:
+            self.scroll[0] += 0.5
+
             diagonalSpeedMultipler = 1 if (self.movementX != IDLE_STATE and self.movementY != IDLE_STATE) else 1
             speedX = (self.movementX[1] - self.movementX[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
             speedY = (self.movementY[1] - self.movementY[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
             self.player.update(self.tilemap, (speedX, speedY))
 
             self.display.fill((14, 140, 160))
-            self.tilemap.render(self.display)
-            self.player.render(self.display)
+            self.tilemap.render(self.display, offset=self.scroll)
+            self.player.render(self.display, offset=self.scroll)
 
             self.screen.blit(self.assets["darkVerticalImage"], (0, 0))
             self.screen.blit(self.assets["lightVerticalImage"], (SCREEN_WIDTH - BORDER_WIDTH, 0))
@@ -105,7 +109,7 @@ class Game:
                 self.bufferInputQueue.clear()
 
             if floatHeld and not self.player.isGrounded:
-                self.player.velocity[1] = 0.1
+                self.player.velocity[1] = 0.5
 
             self.screen.blit(pygame.transform.scale(self.display, (DISPLAY_SCALED_WIDTH, DISPLAY_SCALED_HEIGHT)), (BORDER_WIDTH, 0))
             pygame.display.update()
