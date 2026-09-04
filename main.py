@@ -73,6 +73,7 @@ class Game:
                     if event.key == pygame.K_RIGHT:
                         self.movementX[1] = 1
 
+
                     # other buttons (included in buffer)
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                         self.bufferInputQueue.append(event.key)

@@ -1,4 +1,5 @@
 import pygame
+from scripts.defs import *
 
 class PhysicsEntity:
     def __init__(self, game, entityType, position, size):
@@ -10,6 +11,10 @@ class PhysicsEntity:
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         self.isGrounded = False
 
+    def teleport(self, position):
+        self.position[0] = position[0]
+        self.position[1] = position[1]
+
     def getCollisionBox(self):
         return pygame.Rect(self.position[0], self.position[1], self.size[0], self.size[1])
 
@@ -17,8 +22,15 @@ class PhysicsEntity:
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
         frameMovement = (movement[0]+self.velocity[0], movement[1]+self.velocity[1])
+
         
         self.position[0] += frameMovement[0]
+
+        if self.position[0] <= 0:
+            self.position[0] = DISPLAY_WIDTH - 1
+        elif self.position[0] >= DISPLAY_WIDTH:
+            self.position[0] = 1
+
         entityBox = self.getCollisionBox()
         for collisionBox in tilemap.getSurroundingCollisionBoxes(self.position):
             if entityBox.colliderect(collisionBox):
@@ -27,8 +39,12 @@ class PhysicsEntity:
                     self.collisions['right'] = True
                 elif frameMovement[0] < 0:  # moving left
                     entityBox.left = collisionBox.right
-                    self.collisions['left'] = True 
+                    self.collisions['left'] = True
                 self.position[0] = entityBox.x
+
+        # Screenwrap applies downwards, not upwards
+        if self.position[1] >= DISPLAY_HEIGHT:
+            self.position[1] = 1
 
         self.position[1] += frameMovement[1]
         entityBox = self.getCollisionBox()
