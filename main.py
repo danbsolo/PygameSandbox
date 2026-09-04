@@ -6,7 +6,7 @@ from scripts.utils import loadImage, loadImages
 from scripts.maps import Tilemap
 from scripts.defs import *
 from collections import deque
-
+from scripts.clouds import Clouds
 
 class Game:
     def __init__(self):
@@ -26,13 +26,17 @@ class Game:
         self.assets = {
             "player": loadImage(os.path.join("entities", "player.png")),
             #"randomVerticalImage": loadImage(os.path.join("other", "randomVerticalImage.jpg")),
-            "darkVerticalImage": pygame.transform.scale(loadImage(os.path.join("other", "darkVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)),
-            "lightVerticalImage": pygame.transform.flip(pygame.transform.scale(loadImage(os.path.join("other", "lightVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)), True, False),
+            #"darkVerticalImage": pygame.transform.scale(loadImage(os.path.join("other", "darkVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)),
+            #"lightVerticalImage": pygame.transform.flip(pygame.transform.scale(loadImage(os.path.join("other", "lightVerticalImage.jpg")), (BORDER_WIDTH, SCREEN_HEIGHT)), True, False),
             "decor": loadImages(os.path.join("tiles", "decor")),
             "grass": loadImages(os.path.join("tiles", "grass")),
             "large_decor": loadImages(os.path.join("tiles", "large_decor")),
-            "stone": loadImages(os.path.join("tiles", "stone"))
+            "stone": loadImages(os.path.join("tiles", "stone")),
+            "background": pygame.transform.scale(loadImage("background.png"), (DISPLAY_WIDTH, DISPLAY_HEIGHT)),
+            "clouds": loadImages("clouds")
         }
+
+        self.clouds = Clouds(self.assets["clouds"], count=16)
 
         self.tilemap = Tilemap(self, 16)
 
@@ -46,19 +50,26 @@ class Game:
         floatHeld = False
 
         while True:
-            self.scroll[0] += 0.5
+            self.scroll[0] = (self.player.getCollisionBox().centerx - DISPLAY_WIDTH/2) / 10 #- self.scroll[0]
+            self.scroll[1] = (self.player.getCollisionBox().centery - DISPLAY_HEIGHT/2) / 10
+            # print(self.scroll, self.player.position)
+            # renderScroll = (int(self.scroll[0]), int(self.scroll[1]))
 
             diagonalSpeedMultipler = 1 if (self.movementX != IDLE_STATE and self.movementY != IDLE_STATE) else 1
             speedX = (self.movementX[1] - self.movementX[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
             speedY = (self.movementY[1] - self.movementY[0]) * self.playerSpeedMultiplier * diagonalSpeedMultipler
             self.player.update(self.tilemap, (speedX, speedY))
 
-            self.display.fill((14, 140, 160))
-            self.tilemap.render(self.display, offset=self.scroll)
-            self.player.render(self.display, offset=self.scroll)
+            self.clouds.update()
 
-            self.screen.blit(self.assets["darkVerticalImage"], (0, 0))
-            self.screen.blit(self.assets["lightVerticalImage"], (SCREEN_WIDTH - BORDER_WIDTH, 0))
+            #self.display.fill((14, 140, 160))
+            self.display.blit(self.assets['background'], (0, 0))
+            self.clouds.render(self.display, self.scroll)
+            self.tilemap.render(self.display, self.scroll)
+            self.player.render(self.display, self.scroll)
+
+            #self.screen.blit(self.assets["darkVerticalImage"], (0, 0))
+            #self.screen.blit(self.assets["lightVerticalImage"], (SCREEN_WIDTH - BORDER_WIDTH, 0))
 
             # event loop
             for event in pygame.event.get():

@@ -11,7 +11,6 @@ class PhysicsEntity:
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         self.isGrounded = False
 
-
     def getCollisionBox(self):
         return pygame.Rect(self.position[0], self.position[1], self.size[0], self.size[1])
 
